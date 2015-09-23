@@ -1,5 +1,5 @@
-**The Multi-upload component**
-
+The Multi-upload component
+==========================
 The component purpose is transform simple upload form to multiupload form with progress bar for every file and background uploading of files.
 It's don't need any third-party components.
 
