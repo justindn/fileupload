@@ -60,6 +60,7 @@ In CSS-file you can find four classes:
 You can change it according of your web page design.
 
 ****ADVANCED SETTINGS****
+
 ```javascript
 $fileUpload('your_form_id', 
     {
@@ -70,7 +71,8 @@ $fileUpload('your_form_id',
 	'acceptor' : 'getfile.php',
 	'callback' : functionName
     }
-);```
+);
+```
 
 Like in previous example, 'your_form_id' is value of id-attribute of your form.
 The all settings after form id is optional.
