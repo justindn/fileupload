@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset='utf-8'>
+	<title>The FileUpload Demo</title>
+	<link rel='stylesheet' href='../fileupload.css'>
+	<style>
+		
+	</style>
+	<script src='../fileupload.js'></script>
+
+</head>
+<body>
+
+	<form id='up' method='post' enctype='multipart/form-data'>
+		<input type="file" name='files'>
+		<input type='submit' name='send'>
+	</form>
+	<script>
+		$fileUpload('up');
+	</script>
+</body>
+</html>

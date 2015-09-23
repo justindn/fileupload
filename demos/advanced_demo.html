@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset='utf-8'>
+	<title>The FileUpload Demo</title>
+	<link rel='stylesheet' href='../fileupload.css'>
+	<style>
+	
+		#up{
+			margin:auto;
+			min-height:70px;
+			max-height:90%;
+			width:60%;
+			background-color:#A3B5CC;
+			border:1px solid #777;
+			border-radius:10px;
+			padding:10px;
+			text-align:center;
+			overflow-x:hidden;
+		}
+		#up input[type='file'] {
+			width:100%;
+			border:1px solid #777;
+			border-radius:5px;
+		}
+
+		#files{
+			background-color:#eee;
+			
+			max-height:80%;
+			width:98%;
+			margin:auto;
+			overflow:auto;
+			margin:10px 0 0 0;
+		}
+		/*Own styling of component elements*/
+		.file-upload-box{
+			width:96%;
+			height:35px;
+			border:1px solid #4A5582;
+			border-radius:4px;
+			margin:2px auto;
+			background-color:#C0C9F0;
+			padding:2px;
+		}
+		.file-upload-box-info{
+			margin:1px auto;
+			padding:0;
+		}
+		.file-upload-box progress{
+			height:10px;
+			border-radius:10px;
+			margin:0;
+			
+		}
+		.error_message{
+			background-color:#FF4D4D;
+			color:#fff;
+		}
+		.error_message+progress{
+			background-color:#C76D6D;
+		}
+		.fileupload-button {
+			width:20%;
+			margin:10px auto;
+			border:1px solid #333;
+			border-radius:5px;
+		}
+	</style>
+	<script src='../fileupload.min.js'></script>
+	<script>
+		//Run the component
+		$fileUpload('up', {
+			'maxFileSize'    : '100000000',
+			'fileList'       : 'files',
+			'maxErrorsCount' : '3',
+			'errorTimeout'   : '5000',
+			'callback'       : success,
+		});
+		function success() {
+			alert('All files was successfully uploaded');
+		}
+	</script>
+</head>
+<body>
+
+	<form id='up' method='post' enctype='multipart/form-data'>
+		<input type='file' name='files' multiple>
+		<input type='submit' name='send' value='Upload!'>
+		<div id='files'>
+		</div>
+
+	</form>
+
+</body>
+</html>
