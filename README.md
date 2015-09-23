@@ -12,7 +12,7 @@ Supported browsers:
 
 In not-supported browser user will see an usual uploading form.
 
-***USAGE***
+**USAGE**
 
 Your web-page MUST contain the form with <input type='file'> and <input type='submit'> elements. You must set an id to your form.
 
@@ -24,7 +24,7 @@ The classes of 'native' submit button will be copied to the component-created bu
 
 Uploaded files will be available from PHP-script in the usual $_FILES['files'] array.
 
-**BASIC USAGE**
+***BASIC USAGE***
 
 In the <head> section you must attach the CSS-file:
 <link rel='stylesheet' href='fileupload.css'>
@@ -39,7 +39,7 @@ Then you must to add the next strings:
 
 where 'your_form_id' is id of your upload form.
 
-**ADVANCED USAGE**
+***ADVANCED USAGE***
 
 The same as previous example, you must include CSS:
 <link rel='stylesheet' href='fileupload.css'>
@@ -47,7 +47,7 @@ The same as previous example, you must include CSS:
 and JS-file:
 <script src='fileupload.js'></script>
 
-*ADVANCED STYLING*
+****ADVANCED STYLING****
 
 In CSS-file you can find four classes:
 .file-upload-box - the class-container for progress bar and text.
@@ -57,7 +57,7 @@ In CSS-file you can find four classes:
 
 You can change it according of your web page design.
 
-*ADVANCED SETTINGS*
+****ADVANCED SETTINGS****
 
 $fileUpload('your_form_id', 
 		{
@@ -73,15 +73,15 @@ $fileUpload('your_form_id',
 Like in previous example, 'your_form_id' is value of id-attribute of your form.
 The all settings after form id is optional.
 
-maxFileSize : the maximum size of uploaded file in bytes. Default is 8388608 bytes (8Mb).
+*maxFileSize* : the maximum size of uploaded file in bytes. Default is 8388608 bytes (8Mb).
 
-fileList : the box on your page where progressbars will be created. If it is not set, progressbars will be added at the end of your upload form.
+*fileList* : the box on your page where progressbars will be created. If it is not set, progressbars will be added at the end of your upload form.
 
-maxErrorCount : the maximum of file transfer errors. Default is 10.
+*maxErrorCount* : the maximum of file transfer errors. Default is 10.
 
-errorTimeout : in case of the transfer error, the errorTimeout setting set timeout between re-transfer attempts. Must be set in milliseconds. Default is 1000 ms (1s).
+*errorTimeout* : in case of the transfer error, the errorTimeout setting set timeout between re-transfer attempts. Must be set in milliseconds. Default is 1000 ms (1s).
 
-acceptor : the name of PHP-script which will be process the uploaded files. Default is 'upload.php'.
+*acceptor* : the name of PHP-script which will be process the uploaded files. Default is 'upload.php'.
 
-callback : the name of function which run after the all files will be loaded. Default is false.
+*callback* : the name of function which run after the all files will be loaded. Default is false.
 
