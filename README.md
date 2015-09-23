@@ -60,14 +60,14 @@ You can change it according of your web page design.
 ****ADVANCED SETTINGS****
 
 $fileUpload('your_form_id', 
-		{
-		'maxFileSize' : '100000000',
-		'fileList' : 'files',
-		'maxErrorsCount' : '3',
-		'errorTimeout' : '5000',
-		'acceptor' : 'getfile.php',
-		'callback' : functionName
-		}
+    {
+	'maxFileSize' : '100000000',
+	'fileList' : 'files',
+	'maxErrorsCount' : '3',
+	'errorTimeout' : '5000',
+	'acceptor' : 'getfile.php',
+	'callback' : functionName
+    }
 );
 
 Like in previous example, 'your_form_id' is value of id-attribute of your form.
