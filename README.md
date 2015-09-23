@@ -4,11 +4,11 @@ The component purpose is transform simple upload form to multiupload form with p
 It's don't need any third-party components.
 
 Supported browsers:
-	IE10+
-	Firefox 31+
-	Chrome 31+
-	Safari 7+
-	Opera 12+
+	*IE10+
+	*Firefox 31+
+	*Chrome 31+
+	*Safari 7+
+	*Opera 12+
 
 In not-supported browser user will see an usual uploading form.
 
@@ -33,9 +33,11 @@ and JS-file:
 <script src='fileupload.js'></script>
 
 Then you must to add the next strings:
+```html
 <script>
 	$fileUpload('your_form_id');
 </script>
+```
 
 where 'your_form_id' is id of your upload form.
 
@@ -58,7 +60,7 @@ In CSS-file you can find four classes:
 You can change it according of your web page design.
 
 ****ADVANCED SETTINGS****
-
+```javascript
 $fileUpload('your_form_id', 
     {
 	'maxFileSize' : '100000000',
@@ -68,7 +70,7 @@ $fileUpload('your_form_id',
 	'acceptor' : 'getfile.php',
 	'callback' : functionName
     }
-);
+);```
 
 Like in previous example, 'your_form_id' is value of id-attribute of your form.
 The all settings after form id is optional.
