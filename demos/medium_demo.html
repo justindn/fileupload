@@ -11,7 +11,7 @@
 			min-height:70px;
 			max-height:90%;
 			width:60%;
-			background-color:#eee;
+			background-color:#A3B5CC;
 			border:1px solid #777;
 			border-radius:10px;
 			padding:10px;
@@ -35,15 +35,13 @@
 		}
 		/*Own styling of component elements*/
 		.file-upload-box{
-			width:200px;
-			height:220px;
-			float:left;
-			border:1px solid #aaa;
+			width:96%;
+			height:35px;
+			border:1px solid #4A5582;
 			border-radius:4px;
 			margin:2px auto;
-			background-color:#eee;
+			background-color:#C0C9F0;
 			padding:2px;
-			position:relative;
 		}
 		.file-upload-box-info{
 			margin:1px auto;
@@ -78,15 +76,9 @@
 			'maxErrorsCount' : '3',
 			'errorTimeout'   : '5000',
 			'callback'       : success,
-			'onFileLoaded'   : onFileLoaded
 		});
-		
 		function success() {
 			alert('All files was successfully uploaded');
-		}
-		
-		function onFileLoaded(data) {
-			console.log(data);
 		}
 	</script>
 </head>

@@ -41,6 +41,11 @@ function $fileUpload(formId, settings){
 		if (typeof settings.callback === 'undefined') {
 			settings.callback = false;
 		}
+
+		if (typeof settings.onFileLoaded === 'undefined') {
+			settings.onFileLoaded = false;
+		}
+		
 		//The variable contains the form DOM-object
 		var form = document.getElementById(formId);
 
@@ -218,6 +223,7 @@ function $fileUpload(formId, settings){
 				if (settings.callback) {
 					settings.callback();
 				}
+
 			}
 		}
 		
@@ -279,9 +285,11 @@ function $fileUpload(formId, settings){
 		//success function
 		function onSuccess() {
 			filesArray[currentFileCounter].progressBar.message(filesArray[currentFileCounter].name + '  '+statusText);
-                        
+			if (settings.onFileLoaded) {
+				settings.onFileLoaded(filesArray[currentFileCounter]);
+			}
 			filesArray[currentFileCounter].loaded = true;
-			currentFileCounter++;					
+			currentFileCounter++;				
 			sendFile();
 		}
 	}
