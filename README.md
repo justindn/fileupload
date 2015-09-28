@@ -67,7 +67,9 @@ $fileUpload('your_form_id',
 		'errorTimeout'   : '5000',
 		'acceptor'       : 'getfile.php',
 		'callback'       : functionName,
-		'onFileLoaded'   : onFileLoaded
+		'onFileLoaded'   : onFileLoaded,
+		'showPreviews'   : true,
+		'previewHeight'  : '250px'
 		}
 );
 
@@ -87,14 +89,12 @@ acceptor : the name of PHP-script which will be process the uploaded files. Defa
 callback : the name of function which run after the all files will be loaded. Default is false.
 
 onFileLoaded: the name of function which run after the every files will be loaded. Default is false.
-The function get argument with object represents file:
-{
-	'name'         : 'name_of_file.jpg',
-	'type'         : 'image/jpeg',
-	'size'         : '371251',
-	'file'         : object File (JS),
-	'progressBar'  : DOM object represents progress bar,
-	'loaded'       : true|false  - status of file loading
-	
-}
+The function get argument with object represents js File object
+*https://developer.mozilla.org/en-US/docs/Web/API/File
+*http://www.html5rocks.com/en/tutorials/file/dndfiles/
+
+showPreviews - show previews of images, true|false. Default is false.
+
+previewHeight - css value of preview image height. Default is 150px;
+
 

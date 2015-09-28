@@ -3,89 +3,62 @@
 <head>
 	<meta charset='utf-8'>
 	<title>The FileUpload Demo</title>
-	<link rel='stylesheet' href='../fileupload.css'>
 	<style>
 	
-		#up{
-			margin:auto;
-			min-height:70px;
-			max-height:90%;
-			width:60%;
-			background-color:#eee;
-			border:1px solid #777;
-			border-radius:10px;
-			padding:10px;
+		#images_to_load .file-upload-box{
+			display:inline-block;
+			width:200px;
+			border:1px solid #aaa;
+			margin:3px;
+			border-radius:5px;
 			text-align:center;
 			overflow-x:hidden;
-		}
-		#up input[type='file'] {
-			width:100%;
-			border:1px solid #777;
-			border-radius:5px;
+			background-color:#eee;
 		}
 
-		#files{
-			background-color:#eee;
-			
-			max-height:80%;
-			width:98%;
-			margin:auto;
-			overflow:auto;
-			margin:10px 0 0 0;
+		#images_to_load .file-upload-box span{
+			display:block;
+			text-align:center;
+			padding:0 3px;
 		}
-		/*Own styling of component elements*/
-		.file-upload-box{
-			width:200px;
-			height:220px;
-			float:left;
-			border:1px solid #aaa;
-			border-radius:4px;
-			margin:2px auto;
-			background-color:#eee;
-			padding:2px;
-			position:relative;
+
+		#images_to_load .file-upload-box>.file-upload-box-info{
+			width:100%;
+			font-size:0.7em;
+			display:inline-block;
+			white-space:nowrap;
+			overflow:hidden;
+			text-overflow:ellipsis;
 		}
-		.file-upload-box-info{
-			margin:1px auto;
-			padding:0;
+		#images_to_load .error_message{
+			color:#f00;
 		}
-		.file-upload-box progress{
-			height:10px;
-			border-radius:10px;
-			margin:0;
-			
-		}
-		.error_message{
-			background-color:#FF4D4D;
-			color:#fff;
-		}
-		.error_message+progress{
-			background-color:#C76D6D;
-		}
-		.fileupload-button {
-			width:20%;
-			margin:10px auto;
-			border:1px solid #333;
-			border-radius:5px;
+		#images_to_load .file-upload-box>progress{
+			width:96%;
+				margin-left:2%;
+				height:20px;
+				
 		}
 	</style>
-	<script src='../fileupload.min.js'></script>
+	<script src='../fileupload.js'></script>
 	<script>
 		//Run the component
+	
 		$fileUpload('up', {
 			'maxFileSize'    : '100000000',
-			'fileList'       : 'files',
 			'maxErrorsCount' : '3',
 			'errorTimeout'   : '5000',
-			'callback'       : success,
-			'onFileLoaded'   : onFileLoaded
-		});
-		
-		function success() {
-			alert('All files was successfully uploaded');
+			'acceptor'       : '',
+					'fileList'       : 'images_to_load',
+			'callback'       : allFilesUploaded,
+			'onFileLoaded'   : fileUploaded,
+					'showPreviews'    : true,
+			}
+		);
+		function allFilesUploaded(data) {
+			console.log(data);
 		}
-		
-		function onFileLoaded(data) {
+		function fileUploaded(data) {
 			console.log(data);
 		}
 	</script>
@@ -95,7 +68,7 @@
 	<form id='up' method='post' enctype='multipart/form-data'>
 		<input type='file' name='files' multiple>
 		<input type='submit' name='send' value='Upload!'>
-		<div id='files'>
+		<div id='images_to_load'>
 		</div>
 
 	</form>

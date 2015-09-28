@@ -46,6 +46,14 @@ function $fileUpload(formId, settings){
 			settings.onFileLoaded = false;
 		}
 		
+		if (typeof settings.showPreviews === 'undefined') {
+			settings.showPreviews = false;
+		}
+		
+		if (typeof settings.previewHeight === 'undefined') {
+			settings.previewHeight = '150px';
+		}
+		
 		//The variable contains the form DOM-object
 		var form = document.getElementById(formId);
 
@@ -121,13 +129,32 @@ function $fileUpload(formId, settings){
 			loaded - the simple boolean variable which 'says' if file has been uploaded or not, normally 'false'.
 			For files which cannot be uploaded because of size it set for 'true'.
 		*/
+
+		var previewsArray = [];
+		
 		filesInput.onchange = function() {
+		    
+
 			var currentlyFilesInArray = filesArray.length;
 			
 			for (var i = 0; i < this.files.length; i++) {
-				//if (this.files[i].size>settings.maxFileSize) alert ('za duzy!');	
-				pbar = createProgressDiv(this.files[i].name, this.files[i].size);
-			
+			    
+			    var pbar = createProgressDiv(this.files[i].name, this.files[i].size);
+
+			    var currentFile = this.files[i];
+			    
+			    if (settings.showPreviews) {
+				var reader = new FileReader;
+				
+				reader.fileData = currentFile;
+				reader.fileNumber = i+currentlyFilesInArray;
+				
+				reader.addEventListener('load', function(event) {
+				    createPreview(event.target, currentFile);
+				});
+				
+				reader.readAsDataURL(currentFile);
+			    } else {
 				filesArray[i+currentlyFilesInArray] = {
 					'name' : this.files[i].name, 
 					'size' : this.files[i].size, 
@@ -136,12 +163,42 @@ function $fileUpload(formId, settings){
 					'progressBar' : pbar,
 					'loaded' : false,
 				};
-				
-				settings.fileList.appendChild(pbar.container);
 				if (this.files[i].size > settings.maxFileSize) {
-					filesArray[i+currentlyFilesInArray].loaded = true;
-					filesArray[i+currentlyFilesInArray].progressBar.errorMessage(this.files[i].name + ' - error: file is too big');
+					filesArray[i + currentlyFilesInArray].loaded = true;
+					filesArray[i + currentlyFilesInArray].progressBar.errorMessage(this.files[i].name + ' - error: file is too big');
 				}
+				settings.fileList.appendChild(pbar.container);
+			    }
+
+			    function createPreview(loadedFile) {
+				
+				var currentFile = loadedFile.fileData;
+				
+				pbar = createProgressDiv(currentFile.name, currentFile.size);
+				
+				var imagesPattern = /image\/.*/i;
+				
+				if (imagesPattern.test(currentFile.type)) {
+				    var img = new Image();
+				    img.setAttribute('style', 'height:' + settings.previewHeight + ';');
+				    img.src = loadedFile.result;
+				    pbar.info.insertBefore(img, pbar.messageElement);
+				}
+				filesArray[loadedFile.fileNumber] = {
+					'name' : currentFile.name, 
+					'size' : currentFile.size, 
+					'type' : currentFile.type, 
+					'file' : currentFile,
+					'progressBar' : pbar,
+					'loaded' : false,
+				};
+				if (currentFile.size > settings.maxFileSize) {
+					filesArray[loadedFile.fileNumber].loaded = true;
+					filesArray[loadedFile.fileNumber].progressBar.errorMessage(currentFile.name + ' - error: file is too big');
+				}
+				settings.fileList.appendChild(pbar.container);
+
+			    }
 			}
 			
 		}
@@ -163,26 +220,31 @@ function $fileUpload(formId, settings){
 			var progressDiv = document.createElement('div');
 			progressDiv.className = 'file-upload-box';
 			
+			var messageElement = document.createElement('span');
+			messageElement.innerHTML = name + ', size: ' + size;
+			
 			var infoDiv = document.createElement('div');
 			infoDiv.className = 'file-upload-box-info';
-			infoDiv.innerHTML = name + ', size: ' + size;
+			infoDiv.appendChild(messageElement);
 			progressDiv.appendChild(infoDiv);
 			
 			var progressElement = document.createElement('progress');
 			progressElement.value = '0';
 			progressDiv.appendChild(progressElement);
 			
+			
 			var progressBar = {
-				'container' : progressDiv,
-				'info': infoDiv,
-				'bar' : progressElement,
+				'container'      : progressDiv,
+				'info'           : infoDiv,
+				'bar'            : progressElement,
+				'messageElement' : messageElement,
 				'message' : function (msg) {
-								this.info.innerHTML = msg;
+								this.messageElement.innerHTML = msg;
 								this.info.className = 'file-upload-box-info';
 								this.info.setAttribute('title', msg);
 							},
 				'errorMessage' : function (msg) {
-								this.info.innerHTML = msg;
+								this.messageElement.innerHTML = msg;
 								this.info.className = this.info.className + ' error_message';
 								this.info.setAttribute('title', msg);
 							},
@@ -221,7 +283,7 @@ function $fileUpload(formId, settings){
 				filesInput.removeAttribute('disabled');
 				currentFileCounter = 0;
 				if (settings.callback) {
-					settings.callback();
+					settings.callback(filesArray);
 				}
 
 			}
@@ -286,7 +348,7 @@ function $fileUpload(formId, settings){
 		function onSuccess() {
 			filesArray[currentFileCounter].progressBar.message(filesArray[currentFileCounter].name + '  '+statusText);
 			if (settings.onFileLoaded) {
-				settings.onFileLoaded(filesArray[currentFileCounter]);
+				settings.onFileLoaded(filesArray[currentFileCounter].file);
 			}
 			filesArray[currentFileCounter].loaded = true;
 			currentFileCounter++;				
