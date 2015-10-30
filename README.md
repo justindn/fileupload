@@ -32,20 +32,22 @@ Uploaded files will be available from PHP-script in the usual $_FILES['files'] a
 **BASIC USAGE**
 
 In the <head> section you must attach the CSS-file:
+```
 <link rel='stylesheet' href='fileupload.css'>
-
+```
 
 and JS-file:
+```
 <script src='fileupload.js'></script>
-
+```
 
 Then you must to add the next strings:
 
-
+```
 <script>
 	$fileUpload('your_form_id');
 </script>
-
+```
 
 where 'your_form_id' is id of your upload form.
 
@@ -54,14 +56,16 @@ where 'your_form_id' is id of your upload form.
 
 
 The same as previous example, you must include CSS:
+```
 <link rel='stylesheet' href='fileupload.css'>
-
+```
 
 and JS-file:
+```
 <script src='fileupload.js'></script>
+```
 
 *ADVANCED STYLING*
-
 
 In CSS-file you can find four classes:
 .file-upload-box - the class-container for progress bar and text.
@@ -101,36 +105,36 @@ Like in previous example, 'your_form_id' is value of id-attribute of your form.
 The all settings after form id is optional.
 
 
-maxFileSize : the maximum size of uploaded file in bytes. Default is 8388608 bytes (8Mb).
+**maxFileSize** : the maximum size of uploaded file in bytes. Default is 8388608 bytes (8Mb).
 
 
-fileList : the box on your page where progressbars will be created. If it is not set, progressbars will be added at the end of your upload form.
+**fileList** : the box on your page where progressbars will be created. If it is not set, progressbars will be added at the end of your upload form.
 
 
-maxErrorCount : the maximum of file transfer errors. Default is 10.
+**maxErrorCount** : the maximum of file transfer errors. Default is 10.
 
 
-errorTimeout : in case of the transfer error, the errorTimeout setting set timeout between re-transfer attempts. Must be set in milliseconds. Default is 1000 ms (1s).
+**errorTimeout** : in case of the transfer error, the errorTimeout setting set timeout between re-transfer attempts. Must be set in milliseconds. Default is 1000 ms (1s).
 
 
-acceptor : the name of PHP-script which will be process the uploaded files. Default is 'upload.php'.
+**acceptor** : the name of PHP-script which will be process the uploaded files. Default is 'upload.php'.
 
 
-callback : the name of function which run after the all files will be loaded. Default is false.
+**callback** : the name of function which run after the all files will be loaded. Default is false.
 
 
-onFileLoaded: the name of function which run after the every files will be loaded. Default is false.
+**onFileLoaded**: the name of function which run after the every files will be loaded. Default is false.
 The function get argument with object represents js File object
-*https://developer.mozilla.org/en-US/docs/Web/API/File
-*http://www.html5rocks.com/en/tutorials/file/dndfiles/
+ * https://developer.mozilla.org/en-US/docs/Web/API/File
+ * http://www.html5rocks.com/en/tutorials/file/dndfiles/
 
 
-showPreviews - show previews of images, true|false. Default is false.
+**showPreviews** - show previews of images, true|false. Default is false.
 
 
-previewHeight - css value of preview image height. Default is 150px;
+**previewHeight** - css value of preview image height. Default is 150px;
 
 
-data - the object with data which will be accessible in $_POST array
+**data** - the object with data which you want to be accessible in $_POST array
 
 
