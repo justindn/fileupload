@@ -75,7 +75,8 @@ You can change it according of your web page design.
 
 *ADVANCED SETTINGS*
 
-```$fileUpload('your_form_id', 
+```
+$fileUpload('your_form_id', 
 		{
 		'maxFileSize'    : '100000000',
 		'fileList'       : 'files',
@@ -92,7 +93,8 @@ You can change it according of your web page design.
 				},
 				'name' : 'superUser'
 		}
-);```
+);
+```
 
 
 Like in previous example, 'your_form_id' is value of id-attribute of your form.
