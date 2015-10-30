@@ -109,7 +109,9 @@ function $fileUpload(formId, settings){
 		var filesInput = form.querySelector('input[type="file"]');
 		if(typeof filesInput === 'null') return;
 		
-		filesInput.setAttribute('multiple', 'multiple');
+		if (settings.multiple == true || typeof settings.multiple == 'undefined') {
+		    filesInput.setAttribute('multiple', 'multiple');
+		}
 		
 		if ( settings.fileInputClass != '') {
 		    filesInput.setAttribute('class', filesInput.getAttribute('class') + ' ' + settings.fileInputClass);

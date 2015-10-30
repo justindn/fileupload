@@ -134,7 +134,7 @@ The function get argument with object represents js File object
 
 **previewHeight** - css value of preview image height. Default is 150px;
 
-
 **data** - the object with data which you want to be accessible in $_POST array
 
+**multiple** - if the multiple file upload is possible, true|false. Default is true.
 
