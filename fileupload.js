@@ -4,10 +4,20 @@ The multi-upload script
 */
 
 function $fileUpload(formId, settings){
-
+        
 	var status;
 	var statusText;
-
+	
+	var language = {
+	    'loaded'      : 'loaded',
+	    'uploadfiles' : 'Upload file(s)',
+	    'tooBig'      : ' - error: file is too big',
+	    'loading'     : 'Loading: ',
+	    'tryingToSend': ' Trying to send ',
+	    'error' : 'Something wrong. There is an error: \n',
+	    'failed' : 'Failed: ',
+	};
+	
 	if (!window.File || !window.FileList) {
 		return;
 	}
@@ -16,12 +26,17 @@ function $fileUpload(formId, settings){
 		settings = {};
 	}
 	//the function 'ready' will start after DOM fully loaded
-	document.addEventListener('DOMContentLoaded', ready, false);
+//	document.addEventListener('DOMContentLoaded', ready, false);
+	window.addEventListener('load', ready, false);
+	
+	
 	
 	function ready() {
-		
+              
 		//Checking if the settings object is exists and it contains input file component id 
-		if (typeof formId === 'undefined' ) return;
+		if (typeof formId === 'undefined' ) {
+                    return;
+                }
 		
 		//Checking if the maximum errors count is set up. Defult is 10.
 		if (typeof settings.maxErrorsCount === 'undefined') {
@@ -53,24 +68,33 @@ function $fileUpload(formId, settings){
 		if (typeof settings.previewHeight === 'undefined') {
 			settings.previewHeight = '150px';
 		}
+		if (typeof settings.sendButtonClass === 'undefined') {
+			settings.sendButtonClass = '';
+		}
+		if (typeof settings.fileInputClass === 'undefined') {
+			settings.fileInputClass = '';
+		}
+		if (typeof settings.data === 'undefined') {
+			settings.data = {};
+		}
+		
 		
 		//The variable contains the form DOM-object
 		var form = document.getElementById(formId);
 
 		//Checking if the box id for progressbars is set up. If not - set up it to form.
-              
 		if (typeof settings.fileList === 'undefined') {
 			settings.fileList = form;
 		} else {
 			settings.fileList = document.getElementById(settings.fileList);
-			if (typeof settings.fileList === 'null') {
+			if (settings.fileList === null) {
 				settings.fileList = form;
 			}
 		}
-		
+
 		//Checking if the script-acceptor is set up. Default is 'upload.php'.
 		if (typeof settings.acceptor === 'undefined') {
-			settings.acceptor = 'upload.php';
+			settings.acceptor = '';
 		}
 		
 		//The array which contains for every file: the file, the file information and progressbar object
@@ -83,11 +107,13 @@ function $fileUpload(formId, settings){
 	
 		//the variable contains the input type='file' DOM-object
 		var filesInput = form.querySelector('input[type="file"]');
-		
 		if(typeof filesInput === 'null') return;
 		
 		filesInput.setAttribute('multiple', 'multiple');
-
+		
+		if ( settings.fileInputClass != '') {
+		    filesInput.setAttribute('class', filesInput.getAttribute('class') + ' ' + settings.fileInputClass);
+		}
 		//the variable contains the input type='submit' DOM-object (to replace it with custom button element)
 		var submitButton = form.querySelector("input[type='submit']");
 		
@@ -97,7 +123,7 @@ function $fileUpload(formId, settings){
 		var sendButton = document.createElement('input');
 		
 		sendButton.setAttribute('type', 'button');
-		sendButton.setAttribute('class', 'fileupload-button');
+		sendButton.setAttribute('class', 'fileupload-button ' + settings.sendButtonClass);
 
 		//Copying css class from submit to own button
 		if (submitButton.getAttribute('class') != null) {
@@ -105,7 +131,7 @@ function $fileUpload(formId, settings){
 		}
                 
 		if (submitButton.getAttribute('value') === null) {
-			sendButton.setAttribute('value', 'Upload file(s)');
+			sendButton.setAttribute('value', language.uploadfiles);
 		} else {
 			sendButton.setAttribute('value', submitButton.getAttribute('value'));
 		}
@@ -165,7 +191,7 @@ function $fileUpload(formId, settings){
 				};
 				if (this.files[i].size > settings.maxFileSize) {
 					filesArray[i + currentlyFilesInArray].loaded = true;
-					filesArray[i + currentlyFilesInArray].progressBar.errorMessage(this.files[i].name + ' - error: file is too big');
+					filesArray[i + currentlyFilesInArray].progressBar.errorMessage(this.files[i].name + language.tooBig);
 				}
 				settings.fileList.appendChild(pbar.container);
 			    }
@@ -194,7 +220,7 @@ function $fileUpload(formId, settings){
 				};
 				if (currentFile.size > settings.maxFileSize) {
 					filesArray[loadedFile.fileNumber].loaded = true;
-					filesArray[loadedFile.fileNumber].progressBar.errorMessage(currentFile.name + ' - error: file is too big');
+					filesArray[loadedFile.fileNumber].progressBar.errorMessage(currentFile.name + language.tooBig);
 				}
 				settings.fileList.appendChild(pbar.container);
 
@@ -294,7 +320,7 @@ function $fileUpload(formId, settings){
 			
 			sendButton.setAttribute('disabled', 'disabled');
 			filesInput.setAttribute('disabled', 'disabled');
-			filesArray[currentFileCounter].progressBar.message('Loading: ' + filesArray[currentFileCounter].name + '...');
+			filesArray[currentFileCounter].progressBar.message(language.loading + filesArray[currentFileCounter].name + '...');
 			var xhr = new XMLHttpRequest();
 			
 			//If file uploaded successfully...
@@ -302,7 +328,7 @@ function $fileUpload(formId, settings){
 				if (this.status == 200) {
 					statusText = this.responseText;
 
-					onSuccess();
+					onSuccess(statusText);
 					return;
 				} 
 			};
@@ -318,13 +344,13 @@ function $fileUpload(formId, settings){
 				if (errorsCount < settings.maxErrorsCount) {
 					errorsCount++;
 					filesArray[currentFileCounter].progressBar.errorMessage(
-					'(' + errorsCount + ') Trying to send ' + filesArray[currentFileCounter].name + '...');
+					'(' + errorsCount + ')' . language.tryingToSend + filesArray[currentFileCounter].name + '...');
 					filesArray[currentFileCounter].progressBar.barValue('0');
 					setTimeout(upload, settings.errorTimeout);
 					
 				} else {
-					alert('Something wrong. There is an error: \n' + this.statusText);
-					filesArray[currentFileCounter].progressBar.errorMessage ('Failed: ' + filesArray[currentFileCounter].name);
+					alert(language.error + this.statusText);
+					filesArray[currentFileCounter].progressBar.errorMessage (language.failed + filesArray[currentFileCounter].name);
 					sendButton.removeAttribute('disabled');
 					filesInput.removeAttribute('disabled');
 				}    
@@ -335,6 +361,16 @@ function $fileUpload(formId, settings){
 			
 			var formData = new FormData();
 			formData.append("files", filesArray[currentFileCounter].file);
+			
+			for (k in settings.data) {
+			    if (typeof settings.data[k] == 'function') {
+				var value = settings.data[k]();
+			    } else {
+				var value = settings.data[k];
+			    }
+			    formData.append(k, value);
+			}
+			
 			xhr.send(formData);
 		}
 		
@@ -345,10 +381,11 @@ function $fileUpload(formId, settings){
 		}
 		
 		//success function
-		function onSuccess() {
-			filesArray[currentFileCounter].progressBar.message(filesArray[currentFileCounter].name + '  '+statusText);
+		function onSuccess(status) {
+			filesArray[currentFileCounter].progressBar.message(filesArray[currentFileCounter].name + '  ' + language.loaded);
 			if (settings.onFileLoaded) {
-				settings.onFileLoaded(filesArray[currentFileCounter].file);
+                            filesArray[currentFileCounter].status = status;
+			    settings.onFileLoaded(filesArray[currentFileCounter]);
 			}
 			filesArray[currentFileCounter].loaded = true;
 			currentFileCounter++;				
