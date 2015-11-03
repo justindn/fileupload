@@ -82,16 +82,16 @@ You can change it according of your web page design.
 ```
 $fileUpload('your_form_id', 
 		{
-		'maxFileSize'    : '100000000',
-		'fileList'       : 'files',
-		'maxErrorsCount' : '3',
-		'errorTimeout'   : '5000',
-		'acceptor'       : 'getfile.php',
-		'callback'       : functionName,
-		'onFileLoaded'   : onFileLoaded,
-		'showPreviews'   : true,
-		'previewHeight'  : '250px',
-		'data'           : {
+		'maxFileSize'      : '100000000',
+		'fileList'         : 'files',
+		'maxErrorsCount'   : '3',
+		'errorTimeout'     : '5000',
+		'acceptor'         : 'getfile.php',
+		'onAllFilesLoaded' : functionName,
+		'onFileLoaded'     : onFileLoaded,
+		'showPreviews'     : true,
+		'previewHeight'    : '250px',
+		'data'             : {
 				'id' : function () {
 					return Math.random();
 				},
@@ -120,7 +120,8 @@ The all settings after form id is optional.
 **acceptor** : the name of PHP-script which will be process the uploaded files. Default is 'upload.php'.
 
 
-**callback** : the name of function which run after the all files will be loaded. Default is false.
+**onAllFilesLoaded** : the name of function which run after the all files will be loaded. Default is false. 
+The old name of this parameter was 'callback'. Now you can use 'callback' name, but it is deprecated and will be removed in the future.
 
 
 **onFileLoaded**: the name of function which run after the every files will be loaded. Default is false.

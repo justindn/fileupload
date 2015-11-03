@@ -55,11 +55,20 @@ function $fileUpload(formId, settings) {
 
 		if (typeof settings.callback === 'undefined') {
 			settings.callback = false;
+		} else {
+			//For compatibility
+			settings.onAllFilesLoaded = settings.callback;
 		}
-
+		if (typeof settings.onAllFilesLoaded === 'undefined') {
+			settings.onAllFilesLoaded = false;
+		} else {
+		    //For compatibility
+		    settings.callback = settings.onAllFilesLoaded;
+		}
 		if (typeof settings.onFileLoaded === 'undefined') {
 			settings.onFileLoaded = false;
 		}
+
 		
 		if (typeof settings.showPreviews === 'undefined') {
 			settings.showPreviews = false;
@@ -309,8 +318,8 @@ function $fileUpload(formId, settings) {
 				sendButton.removeAttribute('disabled');
 				filesInput.removeAttribute('disabled');
 				currentFileCounter = 0;
-				if (settings.callback) {
-					settings.callback(filesArray);
+				if (settings.onAllFilesLoaded) {
+					settings.onAllFilesLoaded(filesArray);
 				}
 
 			}
@@ -384,6 +393,7 @@ function $fileUpload(formId, settings) {
 		//success function
 		function onSuccess(status) {
 			filesArray[currentFileCounter].progressBar.message(filesArray[currentFileCounter].name + '  ' + language.loaded);
+			
 			if (settings.onFileLoaded) {
 			    if (typeof status === 'undefined') {
 				status = '';
@@ -396,13 +406,16 @@ function $fileUpload(formId, settings) {
 			sendFile();
 		}
 	}
+	//Function for clearing list of files
 	$fileUpload.clear = function() {
+	    
 	    var fileUploadBoxes = document.getElementsByClassName('file-upload-box');
+	    
 	    for(var i = fileUploadBoxes.length - 1; i >= 0; i--) {
 		if(fileUploadBoxes[i] && fileUploadBoxes[i].parentElement) {
 		    fileUploadBoxes[i].parentElement.removeChild(fileUploadBoxes[i]);
 		}
 	    }
-	   
+
 	}
 }
