@@ -3,7 +3,7 @@ The multi-upload script
 
 */
 
-function $fileUpload(formId, settings){
+function $fileUpload(formId, settings) {
         
 	var status;
 	var statusText;
@@ -14,8 +14,8 @@ function $fileUpload(formId, settings){
 	    'tooBig'      : ' - error: file is too big',
 	    'loading'     : 'Loading: ',
 	    'tryingToSend': ' Trying to send ',
-	    'error' : 'Something wrong. There is an error: \n',
-	    'failed' : 'Failed: ',
+	    'error'       : 'Something wrong. There is an error: \n',
+	    'failed'      : 'Failed: '
 	};
 	
 	if (!window.File || !window.FileList) {
@@ -109,11 +109,11 @@ function $fileUpload(formId, settings){
 		var filesInput = form.querySelector('input[type="file"]');
 		if(typeof filesInput === 'null') return;
 		
-		if (settings.multiple == true || typeof settings.multiple == 'undefined') {
+		if (settings.multiple === true || typeof settings.multiple === 'undefined') {
 		    filesInput.setAttribute('multiple', 'multiple');
 		}
 		
-		if ( settings.fileInputClass != '') {
+		if ( settings.fileInputClass !== '') {
 		    filesInput.setAttribute('class', filesInput.getAttribute('class') + ' ' + settings.fileInputClass);
 		}
 		//the variable contains the input type='submit' DOM-object (to replace it with custom button element)
@@ -128,7 +128,7 @@ function $fileUpload(formId, settings){
 		sendButton.setAttribute('class', 'fileupload-button ' + settings.sendButtonClass);
 
 		//Copying css class from submit to own button
-		if (submitButton.getAttribute('class') != null) {
+		if (submitButton.getAttribute('class') !== null) {
 			sendButton.setAttribute('class', sendButton.getAttribute('class') + ' ' + submitButton.getAttribute('class'));
 		}
                 
@@ -184,12 +184,12 @@ function $fileUpload(formId, settings){
 				reader.readAsDataURL(currentFile);
 			    } else {
 				filesArray[i+currentlyFilesInArray] = {
-					'name' : this.files[i].name, 
-					'size' : this.files[i].size, 
-					'type' : this.files[i].type, 
-					'file' : this.files[i],
+					'name'        : this.files[i].name, 
+					'size'        : this.files[i].size, 
+					'type'        : this.files[i].type, 
+					'file'        : this.files[i],
 					'progressBar' : pbar,
-					'loaded' : false,
+					'loaded'      : false
 				};
 				if (this.files[i].size > settings.maxFileSize) {
 					filesArray[i + currentlyFilesInArray].loaded = true;
@@ -218,7 +218,7 @@ function $fileUpload(formId, settings){
 					'type' : currentFile.type, 
 					'file' : currentFile,
 					'progressBar' : pbar,
-					'loaded' : false,
+					'loaded' : false
 				};
 				if (currentFile.size > settings.maxFileSize) {
 					filesArray[loadedFile.fileNumber].loaded = true;
@@ -229,7 +229,7 @@ function $fileUpload(formId, settings){
 			    }
 			}
 			
-		}
+		};
 		
 		//Function which create progress bar for every file
 		/* Returns the object which contains:
@@ -282,7 +282,7 @@ function $fileUpload(formId, settings){
 				'barMax': function (max) {
 								this.bar.max = max;
 							}
-			}
+			};
 			return progressBar;
 			
 		}
@@ -299,8 +299,7 @@ function $fileUpload(formId, settings){
 		//Sending files
 						
 		function sendFile(){
-			
-			if (currentFileCounter < (filesArray.length)){
+			if (currentFileCounter < (filesArray.length)) {
 				if (filesArray[currentFileCounter].loaded !== true) {
 					upload(); 
 				} else {
@@ -338,7 +337,7 @@ function $fileUpload(formId, settings){
 			xhr.upload.onprogress = function(event) {
 
 				onProgress(event.loaded, event.total);
-			}
+			};
 			
 			//If error:
 			xhr.onerror = function() {
@@ -364,8 +363,8 @@ function $fileUpload(formId, settings){
 			var formData = new FormData();
 			formData.append("files", filesArray[currentFileCounter].file);
 			
-			for (k in settings.data) {
-			    if (typeof settings.data[k] == 'function') {
+			for (var k in settings.data) {
+			    if (typeof settings.data[k] === 'function') {
 				var value = settings.data[k]();
 			    } else {
 				var value = settings.data[k];
@@ -386,12 +385,24 @@ function $fileUpload(formId, settings){
 		function onSuccess(status) {
 			filesArray[currentFileCounter].progressBar.message(filesArray[currentFileCounter].name + '  ' + language.loaded);
 			if (settings.onFileLoaded) {
-                            filesArray[currentFileCounter].status = status;
+			    if (typeof status === 'undefined') {
+				status = '';
+			    }
+			    filesArray[currentFileCounter].status = status;
 			    settings.onFileLoaded(filesArray[currentFileCounter]);
 			}
 			filesArray[currentFileCounter].loaded = true;
 			currentFileCounter++;				
 			sendFile();
 		}
+	}
+	$fileUpload.clear = function() {
+	    var fileUploadBoxes = document.getElementsByClassName('file-upload-box');
+	    for(var i = fileUploadBoxes.length - 1; i >= 0; i--) {
+		if(fileUploadBoxes[i] && fileUploadBoxes[i].parentElement) {
+		    fileUploadBoxes[i].parentElement.removeChild(fileUploadBoxes[i]);
+		}
+	    }
+	   
 	}
 }
