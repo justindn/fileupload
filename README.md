@@ -139,7 +139,7 @@ The function get argument with object represents js File object
 **multiple** - if the multiple file upload is possible, true|false. Default is true.
 
 
-*Functions*
+**FUNCTIONS**
 
 
-$fileUpload.clear() - clears the list of files
+**$fileUpload.clear()** - clears the list of files
