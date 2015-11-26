@@ -15,7 +15,8 @@ function $fileUpload(formId, settings) {
 	    'loading'     : 'Loading: ',
 	    'tryingToSend': ' Trying to send ',
 	    'error'       : 'Something wrong. There is an error: \n',
-	    'failed'      : 'Failed: '
+	    'failed'      : 'Failed: ',
+		
 	};
 	
 	if (!window.File || !window.FileList) {
@@ -374,9 +375,9 @@ function $fileUpload(formId, settings) {
 			
 			for (var k in settings.data) {
 			    if (typeof settings.data[k] === 'function') {
-				var value = settings.data[k]();
+					var value = settings.data[k]();
 			    } else {
-				var value = settings.data[k];
+					var value = settings.data[k];
 			    }
 			    formData.append(k, value);
 			}
@@ -394,11 +395,12 @@ function $fileUpload(formId, settings) {
 		function onSuccess(status) {
 			filesArray[currentFileCounter].progressBar.message(filesArray[currentFileCounter].name + '  ' + language.loaded);
 			
+			if (typeof status === 'undefined') {
+					status = '';
+			}
+			filesArray[currentFileCounter].status = status;
+				
 			if (settings.onFileLoaded) {
-			    if (typeof status === 'undefined') {
-				status = '';
-			    }
-			    filesArray[currentFileCounter].status = status;
 			    settings.onFileLoaded(filesArray[currentFileCounter]);
 			}
 			filesArray[currentFileCounter].loaded = true;
