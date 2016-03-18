@@ -144,3 +144,25 @@ The function get argument with object represents js File object
 
 
 **$fileUpload.clear()** - clears the list of files
+
+**TRANSLATIONS**
+
+You can make translation to your own language with settings:
+$fileUpload('your_form_id', 
+		{
+		'maxFileSize'      : '100000000',
+		'fileList'         : 'files',
+		'maxErrorsCount'   : '3',
+		'errorTimeout'     : '5000',
+		'language'         : {
+		                        'loaded'      : 'loaded',
+								'uploadfiles' : 'Upload file(s)',
+								'tooBig'      : ' - error: file is too big',
+								'loading'     : 'Loading: ',
+								'tryingToSend': ' Trying to send ',
+								'error'       : 'Something wrong. There is an error: \n',
+								'failed'      : 'Failed: '
+							},
+		}
+
+Not translated elements will be shown in English.

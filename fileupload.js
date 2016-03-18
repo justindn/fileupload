@@ -8,16 +8,7 @@ function $fileUpload(formId, settings) {
 	var status;
 	var statusText;
 	
-	var language = {
-	    'loaded'      : 'loaded',
-	    'uploadfiles' : 'Upload file(s)',
-	    'tooBig'      : ' - error: file is too big',
-	    'loading'     : 'Loading: ',
-	    'tryingToSend': ' Trying to send ',
-	    'error'       : 'Something wrong. There is an error: \n',
-	    'failed'      : 'Failed: ',
-		
-	};
+
 	
 	if (!window.File || !window.FileList) {
 		return;
@@ -87,6 +78,17 @@ function $fileUpload(formId, settings) {
 		if (typeof settings.data === 'undefined') {
 			settings.data = {};
 		}
+		if (typeof settings.language === 'undefined') {
+                        settings.language = {
+                        'loaded'      : 'loaded',
+                        'uploadfiles' : 'Upload file(s)',
+                        'tooBig'      : ' - error: file is too big',
+                        'loading'     : 'Loading: ',
+                        'tryingToSend': ' Trying to send ',
+                        'error'       : 'Something wrong. There is an error: \n',
+                        'failed'      : 'Failed: '
+                    };
+		}
 		
 		
 		//The variable contains the form DOM-object
@@ -143,7 +145,7 @@ function $fileUpload(formId, settings) {
 		}
                 
 		if (submitButton.getAttribute('value') === null) {
-			sendButton.setAttribute('value', language.uploadfiles);
+			sendButton.setAttribute('value', settings.language.uploadfiles);
 		} else {
 			sendButton.setAttribute('value', submitButton.getAttribute('value'));
 		}
@@ -203,7 +205,7 @@ function $fileUpload(formId, settings) {
 				};
 				if (this.files[i].size > settings.maxFileSize) {
 					filesArray[i + currentlyFilesInArray].loaded = true;
-					filesArray[i + currentlyFilesInArray].progressBar.errorMessage(this.files[i].name + language.tooBig);
+					filesArray[i + currentlyFilesInArray].progressBar.errorMessage(this.files[i].name + settings.language.tooBig);
 				}
 				settings.fileList.appendChild(pbar.container);
 			    }
@@ -232,7 +234,7 @@ function $fileUpload(formId, settings) {
 				};
 				if (currentFile.size > settings.maxFileSize) {
 					filesArray[loadedFile.fileNumber].loaded = true;
-					filesArray[loadedFile.fileNumber].progressBar.errorMessage(currentFile.name + language.tooBig);
+					filesArray[loadedFile.fileNumber].progressBar.errorMessage(currentFile.name + settings.language.tooBig);
 				}
 				settings.fileList.appendChild(pbar.container);
 
@@ -331,7 +333,7 @@ function $fileUpload(formId, settings) {
 			
 			sendButton.setAttribute('disabled', 'disabled');
 			filesInput.setAttribute('disabled', 'disabled');
-			filesArray[currentFileCounter].progressBar.message(language.loading + filesArray[currentFileCounter].name + '...');
+			filesArray[currentFileCounter].progressBar.message(settings.language.loading + filesArray[currentFileCounter].name + '...');
 			var xhr = new XMLHttpRequest();
 			
 			//If file uploaded successfully...
@@ -355,13 +357,13 @@ function $fileUpload(formId, settings) {
 				if (errorsCount < settings.maxErrorsCount) {
 					errorsCount++;
 					filesArray[currentFileCounter].progressBar.errorMessage(
-					'(' + errorsCount + ')' . language.tryingToSend + filesArray[currentFileCounter].name + '...');
+					'(' + errorsCount + ')' . settings.language.tryingToSend + filesArray[currentFileCounter].name + '...');
 					filesArray[currentFileCounter].progressBar.barValue('0');
 					setTimeout(upload, settings.errorTimeout);
 					
 				} else {
-					alert(language.error + this.statusText);
-					filesArray[currentFileCounter].progressBar.errorMessage (language.failed + filesArray[currentFileCounter].name);
+					alert(settings.language.error + this.statusText);
+					filesArray[currentFileCounter].progressBar.errorMessage (settings.language.failed + filesArray[currentFileCounter].name);
 					sendButton.removeAttribute('disabled');
 					filesInput.removeAttribute('disabled');
 				}    
@@ -375,9 +377,9 @@ function $fileUpload(formId, settings) {
 			
 			for (var k in settings.data) {
 			    if (typeof settings.data[k] === 'function') {
-					var value = settings.data[k]();
+				var value = settings.data[k]();
 			    } else {
-					var value = settings.data[k];
+				var value = settings.data[k];
 			    }
 			    formData.append(k, value);
 			}
@@ -393,14 +395,13 @@ function $fileUpload(formId, settings) {
 		
 		//success function
 		function onSuccess(status) {
-			filesArray[currentFileCounter].progressBar.message(filesArray[currentFileCounter].name + '  ' + language.loaded);
+			filesArray[currentFileCounter].progressBar.message(filesArray[currentFileCounter].name + '  ' + settings.language.loaded);
 			
-			if (typeof status === 'undefined') {
-					status = '';
-			}
-			filesArray[currentFileCounter].status = status;
-				
 			if (settings.onFileLoaded) {
+			    if (typeof status === 'undefined') {
+				status = '';
+			    }
+			    filesArray[currentFileCounter].status = status;
 			    settings.onFileLoaded(filesArray[currentFileCounter]);
 			}
 			filesArray[currentFileCounter].loaded = true;
