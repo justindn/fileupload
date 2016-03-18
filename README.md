@@ -148,6 +148,8 @@ The function get argument with object represents js File object
 **TRANSLATIONS**
 
 You can make translation to your own language with settings:
+
+```
 $fileUpload('your_form_id', 
 		{
 		'maxFileSize'      : '100000000',
@@ -164,5 +166,6 @@ $fileUpload('your_form_id',
 								'failed'      : 'Failed: '
 							},
 		}
+```
 
 Not translated elements will be shown in English.
