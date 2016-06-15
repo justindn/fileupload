@@ -45,20 +45,23 @@
 		//Run the component
 	
 		$fileUpload('up', {
-			'maxFileSize'    : '100000000',
-			'maxErrorsCount' : '3',
-			'errorTimeout'   : '5000',
-			'acceptor'       : '',
-					'fileList'       : 'images_to_load',
-			'callback'       : allFilesUploaded,
-			'onFileLoaded'   : fileUploaded,
-					'showPreviews'    : true,
+			'maxFileSize'       : '100000000',
+			'maxErrorsCount'    : '3',
+			'errorTimeout'      : '5000',
+			'acceptor'          : '',
+			'fileList'          : 'images_to_load',
+			'callback'          : allFilesUploaded,
+			'onFileLoaded'      : fileUploaded,
+			'showPreviews'      : true,
+			'uploadImmediately' : false,
 			}
 		);
 		function allFilesUploaded(data) {
+			console.info('All files was loaded');
 			console.log(data);
 		}
 		function fileUploaded(data) {
+			console.info('File loaded');
 			console.log(data);
 		}
 	</script>

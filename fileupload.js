@@ -8,8 +8,6 @@ function $fileUpload(formId, settings) {
 	var status;
 	var statusText;
 	
-
-	
 	if (!window.File || !window.FileList) {
 		return;
 	}
@@ -18,78 +16,16 @@ function $fileUpload(formId, settings) {
 		settings = {};
 	}
 	//the function 'ready' will start after DOM fully loaded
-//	document.addEventListener('DOMContentLoaded', ready, false);
 	window.addEventListener('load', ready, false);
-	
-	
 	
 	function ready() {
               
 		//Checking if the settings object is exists and it contains input file component id 
 		if (typeof formId === 'undefined' ) {
-                    return;
-                }
-		
-		//Checking if the maximum errors count is set up. Defult is 10.
-		if (typeof settings.maxErrorsCount === 'undefined') {
-			settings.maxErrorsCount = '10';
+			return;
 		}
 		
-		//Checking if the max file size is set up. The default value is 8 Mb.
-		if (typeof settings.maxFileSize === 'undefined') {
-			settings.maxFileSize = '8388608';
-		}
-
-		//Checking if the timeout attempts is set up. Defult is 1000 ms.
-		if (typeof settings.errorTimeout === 'undefined') {
-			settings.errorTimeout = '1000';
-		}
-
-		if (typeof settings.callback === 'undefined') {
-			settings.callback = false;
-		} else {
-			//For compatibility
-			settings.onAllFilesLoaded = settings.callback;
-		}
-		if (typeof settings.onAllFilesLoaded === 'undefined') {
-			settings.onAllFilesLoaded = false;
-		} else {
-		    //For compatibility
-		    settings.callback = settings.onAllFilesLoaded;
-		}
-		if (typeof settings.onFileLoaded === 'undefined') {
-			settings.onFileLoaded = false;
-		}
-
-		
-		if (typeof settings.showPreviews === 'undefined') {
-			settings.showPreviews = false;
-		}
-		
-		if (typeof settings.previewHeight === 'undefined') {
-			settings.previewHeight = '150px';
-		}
-		if (typeof settings.sendButtonClass === 'undefined') {
-			settings.sendButtonClass = '';
-		}
-		if (typeof settings.fileInputClass === 'undefined') {
-			settings.fileInputClass = '';
-		}
-		if (typeof settings.data === 'undefined') {
-			settings.data = {};
-		}
-		if (typeof settings.language === 'undefined') {
-                        settings.language = {
-                        'loaded'      : 'loaded',
-                        'uploadfiles' : 'Upload file(s)',
-                        'tooBig'      : ' - error: file is too big',
-                        'loading'     : 'Loading: ',
-                        'tryingToSend': ' Trying to send ',
-                        'error'       : 'Something wrong. There is an error: \n',
-                        'failed'      : 'Failed: '
-                    };
-		}
-		
+		settings = setDefaultSettings(settings);
 		
 		//The variable contains the form DOM-object
 		var form = document.getElementById(formId);
@@ -104,12 +40,8 @@ function $fileUpload(formId, settings) {
 			}
 		}
 
-		//Checking if the script-acceptor is set up. Default is 'upload.php'.
-		if (typeof settings.acceptor === 'undefined') {
-			settings.acceptor = '';
-		}
-		
-		//The array which contains for every file: the file, the file information and progressbar object
+				
+		//The array which contains, for every file: the file, the file information and progressbar object
 		var filesArray = [];
 		
 		//The variable contains the number of current uploading file
@@ -119,7 +51,8 @@ function $fileUpload(formId, settings) {
 	
 		//the variable contains the input type='file' DOM-object
 		var filesInput = form.querySelector('input[type="file"]');
-		if(typeof filesInput === 'null') return;
+		
+		if (typeof filesInput === 'null') return;
 		
 		if (settings.multiple === true || typeof settings.multiple === 'undefined') {
 		    filesInput.setAttribute('multiple', 'multiple');
@@ -135,7 +68,9 @@ function $fileUpload(formId, settings) {
 		
 		//the variable contains the custom button
 		var sendButton = document.createElement('input');
-		
+		if (settings.uploadImmediately) {
+			sendButton.style.display = "none";
+		}
 		sendButton.setAttribute('type', 'button');
 		sendButton.setAttribute('class', 'fileupload-button ' + settings.sendButtonClass);
 
@@ -174,73 +109,78 @@ function $fileUpload(formId, settings) {
 		
 		filesInput.onchange = function() {
 		    
-
 			var currentlyFilesInArray = filesArray.length;
 			
 			for (var i = 0; i < this.files.length; i++) {
 			    
-			    var pbar = createProgressDiv(this.files[i].name, this.files[i].size);
+			    var pbar = createProgressDiv(this.files[i].name, this.files[i].size, i);
 
 			    var currentFile = this.files[i];
-			    
+				
 			    if (settings.showPreviews) {
-				var reader = new FileReader;
-				
-				reader.fileData = currentFile;
-				reader.fileNumber = i+currentlyFilesInArray;
-				
-				reader.addEventListener('load', function(event) {
-				    createPreview(event.target, currentFile);
-				});
-				
-				reader.readAsDataURL(currentFile);
+					var reader = new FileReader;
+					
+					reader.fileData = currentFile;
+					reader.fileNumber = i + currentlyFilesInArray;
+					
+					reader.addEventListener('load', function(event) {
+						
+						createPreview(event.target, currentFile);
+						if (settings.uploadImmediately) {
+							sendFile();
+						}
+					});
+					
+					reader.readAsDataURL(currentFile);
 			    } else {
-				filesArray[i+currentlyFilesInArray] = {
-					'name'        : this.files[i].name, 
-					'size'        : this.files[i].size, 
-					'type'        : this.files[i].type, 
-					'file'        : this.files[i],
-					'progressBar' : pbar,
-					'loaded'      : false
-				};
-				if (this.files[i].size > settings.maxFileSize) {
-					filesArray[i + currentlyFilesInArray].loaded = true;
-					filesArray[i + currentlyFilesInArray].progressBar.errorMessage(this.files[i].name + settings.language.tooBig);
-				}
-				settings.fileList.appendChild(pbar.container);
+					filesArray[i+currentlyFilesInArray] = {
+						'name'        : this.files[i].name, 
+						'size'        : this.files[i].size, 
+						'type'        : this.files[i].type, 
+						'file'        : this.files[i],
+						'progressBar' : pbar,
+						'loaded'      : false
+					};
+					if (this.files[i].size > settings.maxFileSize) {
+						filesArray[i + currentlyFilesInArray].loaded = true;
+						filesArray[i + currentlyFilesInArray].progressBar.errorMessage(this.files[i].name + settings.language.tooBig);
+					}
+					settings.fileList.appendChild(pbar.container);
+					if (settings.uploadImmediately) {
+						sendFile();
+					}
 			    }
 
-			    function createPreview(loadedFile) {
-				
-				var currentFile = loadedFile.fileData;
-				
-				pbar = createProgressDiv(currentFile.name, currentFile.size);
-				
-				var imagesPattern = /image\/.*/i;
-				
-				if (imagesPattern.test(currentFile.type)) {
-				    var img = new Image();
-				    img.setAttribute('style', 'height:' + settings.previewHeight + ';');
-				    img.src = loadedFile.result;
-				    pbar.info.insertBefore(img, pbar.messageElement);
-				}
-				filesArray[loadedFile.fileNumber] = {
-					'name' : currentFile.name, 
-					'size' : currentFile.size, 
-					'type' : currentFile.type, 
-					'file' : currentFile,
-					'progressBar' : pbar,
-					'loaded' : false
-				};
-				if (currentFile.size > settings.maxFileSize) {
-					filesArray[loadedFile.fileNumber].loaded = true;
-					filesArray[loadedFile.fileNumber].progressBar.errorMessage(currentFile.name + settings.language.tooBig);
-				}
-				settings.fileList.appendChild(pbar.container);
-
+			    function createPreview(loadedFile, currentFile, index) {
+					 
+					var currentFile = loadedFile.fileData;
+					
+					pbar = createProgressDiv(currentFile.name, currentFile.size, index);
+					
+					var imagesPattern = /image\/.*/i;
+					
+					if (imagesPattern.test(currentFile.type)) {
+						var img = new Image();
+						img.setAttribute('style', 'height:' + settings.previewHeight + ';');
+						img.src = loadedFile.result;
+						pbar.info.insertBefore(img, pbar.messageElement);
+					}
+					filesArray[loadedFile.fileNumber] = {
+						'name' : currentFile.name, 
+						'size' : currentFile.size, 
+						'type' : currentFile.type, 
+						'file' : currentFile,
+						'progressBar' : pbar,
+						'loaded' : false
+					};
+					if (currentFile.size > settings.maxFileSize) {
+						filesArray[loadedFile.fileNumber].loaded = true;
+						filesArray[loadedFile.fileNumber].progressBar.errorMessage(currentFile.name + settings.language.tooBig);
+					}
+					settings.fileList.appendChild(pbar.container);
 			    }
 			}
-			
+
 		};
 		
 		//Function which create progress bar for every file
@@ -255,8 +195,11 @@ function $fileUpload(formId, settings) {
 				barValue: set the value of the 'bar' element
 				barMax: set the max value of the 'bar' element
 		*/
-		function createProgressDiv(name, size) {
-		
+		function createProgressDiv(name, size, index) {
+		console.log(index);
+			if (typeof index === 'undefined') {
+				index = 0;
+			}
 			var progressDiv = document.createElement('div');
 			progressDiv.className = 'file-upload-box';
 			
@@ -266,18 +209,26 @@ function $fileUpload(formId, settings) {
 			var infoDiv = document.createElement('div');
 			infoDiv.className = 'file-upload-box-info';
 			infoDiv.appendChild(messageElement);
+			
 			progressDiv.appendChild(infoDiv);
 			
 			var progressElement = document.createElement('progress');
 			progressElement.value = '0';
 			progressDiv.appendChild(progressElement);
 			
-			
+			var deleteButton = document.createElement('button');
+			deleteButton.className = 'file-upload-delete-button';
+			deleteButton.setAttribute('data-type', 'deleteButton');
+			deleteButton.setAttribute('data-index', index);
+			deleteButton.innerHTML = '&times;';
+			progressDiv.appendChild(deleteButton);
+
 			var progressBar = {
 				'container'      : progressDiv,
 				'info'           : infoDiv,
 				'bar'            : progressElement,
 				'messageElement' : messageElement,
+				'deleteButton'   : deleteButton,
 				'message' : function (msg) {
 								this.messageElement.innerHTML = msg;
 								this.info.className = 'file-upload-box-info';
@@ -294,12 +245,16 @@ function $fileUpload(formId, settings) {
 				'barMax': function (max) {
 								this.bar.max = max;
 							}
+				
 			};
+			progressDiv.addEventListener('click', function(event) {
+									clickEventListener(event, progressBar) 
+								}, false);
 			return progressBar;
 			
 		}
 		
-		/*The functions callbacks:
+		/* The functions callbacks:
 			sendFile() checks is there any files to send. 
 			If yes, it calls upload(), which sends the file. While file is uploaded, upload() permanently calls the onProgress() function, which show to user the upload progress. 
 			After the upload is complete, upload() calls onSuccess() function,
@@ -310,7 +265,7 @@ function $fileUpload(formId, settings) {
 		
 		//Sending files
 						
-		function sendFile(){
+		function sendFile() {
 			if (currentFileCounter < (filesArray.length)) {
 				if (filesArray[currentFileCounter].loaded !== true) {
 					upload(); 
@@ -324,7 +279,6 @@ function $fileUpload(formId, settings) {
 				if (settings.onAllFilesLoaded) {
 					settings.onAllFilesLoaded(filesArray);
 				}
-
 			}
 		}
 		
@@ -333,21 +287,21 @@ function $fileUpload(formId, settings) {
 			
 			sendButton.setAttribute('disabled', 'disabled');
 			filesInput.setAttribute('disabled', 'disabled');
+			
 			filesArray[currentFileCounter].progressBar.message(settings.language.loading + filesArray[currentFileCounter].name + '...');
+			
 			var xhr = new XMLHttpRequest();
 			
 			//If file uploaded successfully...
 			xhr.onload = function() {
 				if (this.status == 200) {
 					statusText = this.responseText;
-
 					onSuccess(statusText);
 					return;
-				} 
+				}
 			};
 			//Show progress to user
 			xhr.upload.onprogress = function(event) {
-
 				onProgress(event.loaded, event.total);
 			};
 			
@@ -355,10 +309,14 @@ function $fileUpload(formId, settings) {
 			xhr.onerror = function() {
 				//Showing user the number of attempt
 				if (errorsCount < settings.maxErrorsCount) {
+					
 					errorsCount++;
+					
 					filesArray[currentFileCounter].progressBar.errorMessage(
-					'(' + errorsCount + ')' . settings.language.tryingToSend + filesArray[currentFileCounter].name + '...');
+					'(' + errorsCount + ')' + settings.language.tryingToSend + filesArray[currentFileCounter].name + '...');
+					
 					filesArray[currentFileCounter].progressBar.barValue('0');
+					
 					setTimeout(upload, settings.errorTimeout);
 					
 				} else {
@@ -373,13 +331,14 @@ function $fileUpload(formId, settings) {
 			xhr.open("POST", settings.acceptor, true); 
 			
 			var formData = new FormData();
+			
 			formData.append("files", filesArray[currentFileCounter].file);
 			
 			for (var k in settings.data) {
 			    if (typeof settings.data[k] === 'function') {
-				var value = settings.data[k]();
+					var value = settings.data[k]();
 			    } else {
-				var value = settings.data[k];
+					var value = settings.data[k];
 			    }
 			    formData.append(k, value);
 			}
@@ -397,16 +356,99 @@ function $fileUpload(formId, settings) {
 		function onSuccess(status) {
 			filesArray[currentFileCounter].progressBar.message(filesArray[currentFileCounter].name + '  ' + settings.language.loaded);
 			
+			var hasBeenAlreadyLoaded = filesArray[currentFileCounter].loaded;
+			
 			if (settings.onFileLoaded) {
 			    if (typeof status === 'undefined') {
-				status = '';
+					status = '';
 			    }
 			    filesArray[currentFileCounter].status = status;
-			    settings.onFileLoaded(filesArray[currentFileCounter]);
+				if (!hasBeenAlreadyLoaded) {
+					settings.onFileLoaded(filesArray[currentFileCounter]);
+				}
 			}
 			filesArray[currentFileCounter].loaded = true;
 			currentFileCounter++;				
 			sendFile();
+		}
+		function clickEventListener(event, progressBar) {
+			event.preventDefault();
+			if (event.target.tagName == 'BUTTON' && event.target.getAttribute('data-type') == 'deleteButton') {
+				var index = event.target.getAttribute('data-index');
+				event.target.parentElement.parentElement.removeChild(event.target.parentElement);
+				console.log('index ' + index);
+				filesArray[index].loaded = true;
+			}
+			
+		}
+		
+		function setDefaultSettings(settings) {
+		//Checking if the maximum errors count is set up. Defult is 10.
+			if (typeof settings.maxErrorsCount === 'undefined') {
+				settings.maxErrorsCount = '10';
+			}
+			
+			//Checking if the max file size is set up. The default value is 8 Mb.
+			if (typeof settings.maxFileSize === 'undefined') {
+				settings.maxFileSize = '8388608';
+			}
+
+			//Checking if the timeout attempts is set up. Defult is 1000 ms.
+			if (typeof settings.errorTimeout === 'undefined') {
+				settings.errorTimeout = '1000';
+			}
+
+			if (typeof settings.callback === 'undefined') {
+				settings.callback = false;
+			} else {
+				//For compatibility
+				settings.onAllFilesLoaded = settings.callback;
+			}
+			if (typeof settings.onAllFilesLoaded === 'undefined') {
+				settings.onAllFilesLoaded = false;
+			} else {
+				//For compatibility
+				settings.callback = settings.onAllFilesLoaded;
+			}
+			if (typeof settings.onFileLoaded === 'undefined') {
+				settings.onFileLoaded = false;
+			}
+			
+			if (typeof settings.showPreviews === 'undefined') {
+				settings.showPreviews = false;
+			}
+			
+			if (typeof settings.previewHeight === 'undefined') {
+				settings.previewHeight = '150px';
+			}
+			if (typeof settings.sendButtonClass === 'undefined') {
+				settings.sendButtonClass = '';
+			}
+			if (typeof settings.fileInputClass === 'undefined') {
+				settings.fileInputClass = '';
+			}
+			if (typeof settings.data === 'undefined') {
+				settings.data = {};
+			}
+			if (typeof settings.uploadImmediately === 'undefined') {
+				settings.uploadImmediately = false;
+			}
+			if (typeof settings.language === 'undefined') {
+						settings.language = {
+							'loaded'      : 'loaded',
+							'uploadfiles' : 'Upload file(s)',
+							'tooBig'      : ' - error: file is too big',
+							'loading'     : 'Loading: ',
+							'tryingToSend': ' Trying to send ',
+							'error'       : 'Something wrong. There is an error: \n',
+							'failed'      : 'Failed: '
+						};
+			}
+			//Checking if the script-acceptor is set up. Default is ''.
+			if (typeof settings.acceptor === 'undefined') {
+				settings.acceptor = '';
+			}
+			return settings;
 		}
 	}
 	//Function for clearing list of files
@@ -415,10 +457,12 @@ function $fileUpload(formId, settings) {
 	    var fileUploadBoxes = document.getElementsByClassName('file-upload-box');
 	    
 	    for(var i = fileUploadBoxes.length - 1; i >= 0; i--) {
-		if(fileUploadBoxes[i] && fileUploadBoxes[i].parentElement) {
-		    fileUploadBoxes[i].parentElement.removeChild(fileUploadBoxes[i]);
-		}
+			if(fileUploadBoxes[i] && fileUploadBoxes[i].parentElement) {
+				fileUploadBoxes[i].parentElement.removeChild(fileUploadBoxes[i]);
+			}
 	    }
 
 	}
+	
+	
 }
